@@ -39,6 +39,15 @@ import frc.robot.util.NetworkTablesUtil;
 import frc.robot.util.QuestNav;
 import frc.robot.util.Util;
 
+// luo ge
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.urcl.URCL;
+
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 /**
@@ -48,6 +57,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     // public static final double MAX_SPEED = 3.0; // 3 meters per second
     // public static final double MAX_ANGULAR_SPEED = Math.PI; // 1/2 rotation per second
     final double LOCK_HEADING_THRESHOLD = 0.1; // TODO: test if when rotate without translating does the robot turn in a "reasonable" manner
+    final double SKEW_CORRECTION_VELOCITY_COEFFICIENT = 0.1;
     private static final double SMART_OPTIMIZATION_THRESH_M_PER_SEC = 2;
 
     private static final boolean INVERT_DRIVE_MOTORS = true;
@@ -116,6 +126,26 @@ public class DriveTrainSubsystem extends SubsystemBase {
     // private final AprilTagHandler aprilTagHandler;
     public DriveTrainSubsystem(/*AprilTagHandler aprilTagHandler*/) {
         // this.aprilTagHandler = aprilTagHandler;
+        
+        /*
+        // Record metadata
+        Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+        Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+        Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+        Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+        Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+
+        switch (BuildConstants.DIRTY) {
+            case 0:
+              Logger.recordMetadata("GitDirty", "All changes committed");
+              break;
+            case 1:
+              Logger.recordMetadata("GitDirty", "Uncommitted changes");
+              break;
+            default:
+              Logger.recordMetadata("GitDirty", "Unknown");
+              break;
+          }*/
 
         RobotGyro.resetGyroAngle();
 
@@ -244,7 +274,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         if (Flags.DriveTrain.ENABLE_ANGULAR_VELOCITY_COMPENSATION_TELEOP && Robot.INSTANCE.isTeleop()) {
             // TODO: WE SET THIS TO 0.1 AT START. COULD JUST BE MAKING SKEW WORSE GOING IN OPPOSITE DIRECTION
             // TODO: WE NEED TO TUNE THE CON STANT TO MAKE GOOD !
-            chassisSpeeds = angularVelocitySkewCorrection(chassisSpeeds, 0.1);
+            chassisSpeeds = angularVelocitySkewCorrection(chassisSpeeds, SKEW_CORRECTION_VELOCITY_COEFFICIENT);
         }
 
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
@@ -258,8 +288,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         // TODO: This is publishing a newly instantiated list UNRELATED to anything
         targetSwerveStatePublisher.set(optimizedTargetStates);
     }
-
-    @SuppressWarnings("unused")
+    
     private double applyLockHeadingMode(double forwardSpeed, double sidewaysSpeed, double rotSpeed) {
         double speed = Math.sqrt(Math.pow(forwardSpeed, 2) + Math.pow(sidewaysSpeed, 2));
         boolean isMoving = speed > LOCK_HEADING_THRESHOLD;
