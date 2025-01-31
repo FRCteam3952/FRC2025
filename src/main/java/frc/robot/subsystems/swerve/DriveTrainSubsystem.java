@@ -34,7 +34,8 @@ import frc.robot.Constants.RobotConstants;
 import frc.robot.Flags;
 import frc.robot.Robot;
 import frc.robot.commands.ManualDriveCommand;
-import frc.robot.subsystems.staticsubsystems.RobotGyro;
+// import frc.robot.subsystems.staticsubsystems.RobotGyro;
+import frc.robot.subsystems.swerve.AdisGyroIO;
 import frc.robot.util.NetworkTablesUtil;
 import frc.robot.util.QuestNav;
 import frc.robot.util.Util;
@@ -104,6 +105,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     private final SwerveModule backLeft = new SwerveModule("bL_06", backLeftIO);
     private final SwerveModule backRight = new SwerveModule("bR_01", backRightIO);
 
+    public final GyroIO gyroIO = new AdisGyroIO();
     public final SwerveModule[] swerveModules = {frontLeft, frontRight, backLeft, backRight};
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
     private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, RobotGyro.getRotation2d(), this.getAbsoluteModulePositions(), new Pose2d(), new Matrix<>(Nat.N3(), Nat.N1(), new double[]{0.1, 0.1, 0.1}), new Matrix<>(Nat.N3(), Nat.N1(), new double[]{0.01, 0.01, 0.1}));
