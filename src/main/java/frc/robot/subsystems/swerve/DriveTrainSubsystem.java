@@ -386,6 +386,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        frontLeft.periodic();
+        frontRight.periodic();
+        backLeft.periodic();
+        backRight.periodic();
+
         //publishes each wheel information to network table for debugging
         realSwerveStatePublisher.set(new SwerveModuleState[]{frontLeft.getAbsoluteModuleState(), frontRight.getAbsoluteModuleState(), backLeft.getAbsoluteModuleState(), backRight.getAbsoluteModuleState()});
         // absoluteAbsoluteSwerveStatePublisher.set(new SwerveModuleState[]{frontLeft.getAbsoluteAbsoluteModuleState(), frontRight.getAbsoluteAbsoluteModuleState(), backLeft.getAbsoluteAbsoluteModuleState(), backRight.getAbsoluteAbsoluteModuleState()});

@@ -4,27 +4,16 @@
 
 package frc.robot.subsystems.swerve;
 
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericPublisher;
 import edu.wpi.first.networktables.NetworkTableType;
 import frc.robot.Constants.NetworkTablesConstants;
-import frc.robot.subsystems.swerve.SwerveModuleIO.SwerveModuleIOInputs;
 import frc.robot.Flags;
 import frc.robot.util.NetworkTablesUtil;
+import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.util.Util.bringAngleWithinUnitCircle;
 import static frc.robot.util.Util.nearestHundredth;
@@ -61,7 +50,7 @@ public class SwerveModule {
     private final String name;
     private final GenericPublisher rotationPublisher;
     private final SwerveModuleIO io;
-    private SwerveModuleIOInputs inputs = new SwerveModuleIOInputsAutoLogged();
+    private SwerveModuleIOInputsAutoLogged inputs = new SwerveModuleIOInputsAutoLogged();
 
     /**
      * @param driveMotorCANID     CAN ID for the drive motor.
@@ -402,12 +391,12 @@ public class SwerveModule {
         }
 
         // TODO: add flag for the print statements and stuff here turning on
-        double vel = inputs.driveVelocityRadPerSec;
-        double tar = optimizedDesiredState.speedMetersPerSecond;
-        double ratio = 0;
-        if (Math.abs(tar) > 0.01) {
-            ratio = vel / tar;
-        }
+        // double vel = inputs.driveVelocityRadPerSec;
+        // double tar = optimizedDesiredState.speedMetersPerSecond;
+        // double ratio = 0;
+        // if (Math.abs(tar) > 0.01) {
+        //     ratio = vel / tar;
+        // }
         //System.out.println(this.name + " velocity: " + nearestHundredth(inputs.driveVelocityRadPerSec) + " target speed: " + nearestHundredth(optimizedDesiredState.speedMetersPerSecond) + ", ratio: " + nearestHundredth(ratio));
         //System.out.println(this.name + ", position: " + this.driveEncoder.getPosition());
     }
@@ -448,5 +437,10 @@ public class SwerveModule {
         if (Flags.DriveTrain.ENABLED && Flags.DriveTrain.ENABLE_TURN_MOTORS) {
             this.io.setTurnMotorVoltage(voltage);
         }
+    }
+
+    public void periodic() {
+        this.io.updateInputs(inputs);
+        Logger.processInputs("Drive/" + this.name, inputs);
     }
 }
