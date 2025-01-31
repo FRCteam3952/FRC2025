@@ -2,7 +2,12 @@ package frc.robot.subsystems.swerve;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.ctre.phoenix6.StatusSignal;
+import com.revrobotics.spark.SparkBase;
+
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public interface SwerveModuleIO {
     @AutoLog
@@ -18,6 +23,8 @@ public interface SwerveModuleIO {
         public double turnVelocityRadPerSec = 0.0;
         public double turnAppliedVolts = 0.0;
         public double turnCurrentAmps = 0.0;
+
+        public Rotation2d absoluteEncoderAbsolutePosition = new Rotation2d();
 
         public double[] odometryTimestamps = new double[] {};
         public double[] odometryDrivePositionsRad = new double[] {};
@@ -38,4 +45,15 @@ public interface SwerveModuleIO {
   
     /** Run the turn motor to the specified rotation. */
     public default void setTurnPosition(Rotation2d rotation) {}
+
+    // Begin our methods:
+    public void setTurnEncoderPosition(double position);
+
+    public void setDriveMotorVoltage(double input);
+
+    public void setTurnMotorVoltage(double input);
+
+    public void setDrivePIDControllerReference(double desiredSpeed, SparkBase.ControlType controlType);
+    
+    public void setTurnPIDControllerReference(double desiredAngle, SparkBase.ControlType controlType);
 }

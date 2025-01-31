@@ -23,8 +23,9 @@ public class TestDriveCommand extends Command {
 
     @Override
     public void execute() {
-        this.driveTrain.directDriveSpeed(-this.joystick.getLeftVerticalMovement());
-        this.driveTrain.directTurnSpeed(this.joystick.getRightHorizontalMovement());
+        double joystickToVoltageCoefficient = 6.0; // made up constant by ivan, half of what addison chan said it should be
+        this.driveTrain.directDriveSpeed(-this.joystick.getLeftVerticalMovement() * joystickToVoltageCoefficient);
+        this.driveTrain.directTurnSpeed(this.joystick.getRightHorizontalMovement() * joystickToVoltageCoefficient);
 
         for (SwerveModule module : this.driveTrain.swerveModules) {
             System.out.println("name: " + module.getName() + ", abs abs: " + Util.nearestHundredth(module.getTurnAbsolutelyAbsolutePosition()) + ", abs: " + Util.nearestHundredth(module.getTurnAbsEncoderPosition()) + ", rel: " + Util.nearestHundredth(module.getTurnRelativePosition()));

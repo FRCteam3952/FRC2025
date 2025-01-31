@@ -22,6 +22,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericPublisher;
 import edu.wpi.first.networktables.NetworkTableType;
 import frc.robot.Constants.NetworkTablesConstants;
+import frc.robot.subsystems.swerve.SwerveModuleIO.SwerveModuleIOInputs;
 import frc.robot.Flags;
 import frc.robot.util.NetworkTablesUtil;
 
@@ -56,20 +57,11 @@ import static frc.robot.util.Util.nearestHundredth;
  */
 public class SwerveModule {
     private static final double SWERVE_ROTATION_OPTIMIZATION_THRESH_DEG = 90;
-    private final SparkMax driveMotor;
-    private final SparkMax turnMotor;
-
-    private final SparkClosedLoopController drivePIDController;
-    private final SparkClosedLoopController turnPIDController;
-
-    private final RelativeEncoder driveEncoder;
-    private final RelativeEncoder turnEncoder; // + power = CCW, - power = CW
-
-    private final CANcoder turnAbsoluteEncoder;
 
     private final String name;
-
     private final GenericPublisher rotationPublisher;
+    private final SwerveModuleIO io;
+    private SwerveModuleIOInputs inputs = new SwerveModuleIOInputsAutoLogged();
 
     /**
      * @param driveMotorCANID     CAN ID for the drive motor.
@@ -79,24 +71,28 @@ public class SwerveModule {
      * @param invertDriveMotor    Whether to invert the drive motor. This should be the same across all modules.
      * @param invertTurnMotor     Whether to invert the turn motor. This should be the same across all modules.
      */
-    public SwerveModule(int driveMotorCANID, int turningMotorCANID, int turningEncoderCANID, String name, boolean invertDriveMotor, boolean invertTurnMotor) {
-        driveMotor = new SparkMax(driveMotorCANID, MotorType.kBrushless);
-        turnMotor = new SparkMax(turningMotorCANID, MotorType.kBrushless);
+    public SwerveModule(String name, SwerveModuleIO io) {
+        this.io = io;
         this.name = name;
-        driveEncoder = driveMotor.getEncoder();
-        turnEncoder = turnMotor.getEncoder();
-        turnAbsoluteEncoder = new CANcoder(turningEncoderCANID);
 
         rotationPublisher = NetworkTablesUtil.getPublisher(NetworkTablesConstants.MAIN_TABLE_NAME, name + "_rot", NetworkTableType.kDouble);
 
-        // driveMotor.setInverted(invertDriveMotor);
-        // turnMotor.setInverted(invertTurnMotor);
+        // TODO: fix these print statements that we had before for new IO paradigm!!!!!!:
+        // System.out.println(name + " is at abs-abs " + this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble() + ", abs " + this.turnAbsoluteEncoder.getPosition().getValueAsDouble());
+        // System.out.println("magnet health of " + name + " is " + this.turnAbsoluteEncoder.getMagnetHealth().getValue());
+        // if (this.turnAbsoluteEncoder.getFault_BadMagnet().getValue()) {
+        //     System.out.println(name + " has a bad magnet");
+        // }
 
-        // this.driveMotor.setSmartCurrentLimit(30);
-        // this.driveMotor.setSecondaryCurrentLimit(100);
 
-        // this.turnMotor.setSmartCurrentLimit(30);
-        // this.turnMotor.setSecondaryCurrentLimit(100);
+        // io.setDriveMotorInverted(invertDriveMotor);
+        // io.setTurnMotorInverted(invertTurnMotor);
+
+        // this.io.setDriveMotorSmartCurrentLimit(30);
+        // this.io.setDriveMotorSecondaryCurrentLimit(100);
+
+        // this.io.setTurnMotorSmartCurrentLimit(30);
+        // this.io.setTurnMotorSecondaryCurrentLimit(100);
 
         // Circumference / Gear Ratio (L2 of MK4i). This evaluates to ~1.86 inches/rotation, which is close to experimental values.
         // We are therefore using the calculated value. (Thanks Ivan)
@@ -104,76 +100,6 @@ public class SwerveModule {
         //this.driveEncoder.setPositionConversionFactor(Units.inchesToMeters(4 * Math.PI / 6.75));
         //this.driveEncoder.setVelocityConversionFactor(Units.inchesToMeters(4 * Math.PI / 6.75) / 60);
 
-        SparkMaxConfig driveConfig = new SparkMaxConfig();
-        SparkMaxConfig turnConfig = new SparkMaxConfig();
-        driveConfig
-                .idleMode(IdleMode.kCoast)
-                .smartCurrentLimit(40)
-                .voltageCompensation(10)
-                .inverted(invertDriveMotor);
-
-        turnConfig
-                .smartCurrentLimit(40)
-                .voltageCompensation(10)
-                .inverted(invertTurnMotor);
-
-        driveConfig.encoder
-                .positionConversionFactor(Units.inchesToMeters(4 * Math.PI / 6.75))
-                .velocityConversionFactor(Units.inchesToMeters(4 * Math.PI / 6.75) / 60);
-
-        turnConfig.encoder
-                .positionConversionFactor(150d / 7d * Math.PI / 180 / 1.28)
-                .velocityConversionFactor(150d / 7d / 60d * Math.PI / 180 / 1.28);
-
-        //this.turnEncoder.setPositionConversionFactor(150d / 7d * Math.PI / 180 / 1.28); // ???
-        //this.turnEncoder.setVelocityConversionFactor(150d / 7d / 60d * Math.PI / 180 / 1.28);
-
-        this.driveEncoder.setPosition(0);
-        // this.turnEncoder.setPosition(0);
-
-        System.out.println(name + " is at abs-abs " + this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble() + ", abs " + this.turnAbsoluteEncoder.getPosition().getValueAsDouble());
-        this.turnAbsoluteEncoder.setPosition(this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble());
-        System.out.println("magnet health of " + name + " is " + this.turnAbsoluteEncoder.getMagnetHealth().getValue());
-
-        if (this.turnAbsoluteEncoder.getFault_BadMagnet().getValue()) {
-            System.out.println(name + " has a bad magnet");
-        }
-
-        this.turnEncoder.setPosition(this.getTurnAbsolutelyAbsolutePosition());
-
-        // this.driveMotor.enableVoltageCompensation(10);
-        this.drivePIDController = this.driveMotor.getClosedLoopController();
-
-        driveConfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                .pidf(0.3, 0, 0.2, 0.25) // p0.3, d 0.2 ff0.25
-                .outputRange(-1, 1);
-
-        // These numbers are recently made up and subject to change.
-        driveConfig.closedLoop.maxMotion
-                .maxVelocity(3.5)
-                .maxAcceleration(4.0)
-                // TODO: tune closed loop error constant
-                .allowedClosedLoopError(0.1);
-
-        //this.driveMotor.enableVoltageCompensation(10);
-        //this.turnMotor.enableVoltageCompensation(10);
-        this.turnPIDController = this.turnMotor.getClosedLoopController();
-
-        //this.driveMotor.setSmartCurrentLimit(40);
-        //this.turnMotor.setSmartCurrentLimit(40);
-        //this.driveMotor.setIdleMode(IdleMode.kCoast);
-
-        turnConfig.closedLoop
-                .positionWrappingEnabled(true)
-                .positionWrappingMinInput(-Math.PI)
-                .positionWrappingMaxInput(Math.PI)
-                .pidf(0.55, 0, 0.3, 0) //Do not use ff because it will cause the motors to spin in the wrong direction :)
-                .outputRange(-1, 1);// used to be 0.55 0 0.3
-        // TODO: add some more config for MAXMOTION
-
-        driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        turnMotor.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         //System.out.println(this.name + " inverts drive: " + this.driveMotor.getInverted() + " turn: " + this.turnMotor.getInverted());
         // System.out.println(this.name + " abs pos " + RobotMathUtil.roundNearestHundredth(this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble()));
@@ -235,7 +161,7 @@ public class SwerveModule {
     }
 
     public double getDriveAmperage() {
-        return this.driveMotor.getOutputCurrent();
+        return this.inputs.driveCurrentAmps;
     }
 
     /**
@@ -245,7 +171,7 @@ public class SwerveModule {
      */
     public void resetEncodersToAbsoluteValue() {
         // this.turnAbsoluteEncoder.setPosition(this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble());
-        this.turnEncoder.setPosition(this.getTurnAbsEncoderPosition());
+        this.io.setTurnEncoderPosition(this.getTurnAbsEncoderPosition());
     }
 
     /**
@@ -259,7 +185,7 @@ public class SwerveModule {
      * @return The number of meters the drive motor has traveled from the starting position.
      */
     public double getDrivePosition() {
-        return this.driveEncoder.getPosition();
+        return this.inputs.drivePositionRad;
     }
 
     /**
@@ -268,7 +194,7 @@ public class SwerveModule {
      */
     public double getTurnAbsEncoderPosition() {
         // ORIGINAL UNITS: rotations. Converted to radians.
-        return this.turnAbsoluteEncoder.getPosition().getValueAsDouble() * 360 * Math.PI / 180;
+        return this.inputs.turnPosition.getRadians();
     }
 
     /**
@@ -277,7 +203,7 @@ public class SwerveModule {
      */
     public double getTurnAbsEncoderVelocity() {
         // ORIGINAL UNITS: rotations per second. Converted to radians per second.
-        return this.turnAbsoluteEncoder.getVelocity().getValueAsDouble() * 360 * Math.PI / 180;
+        return this.inputs.turnVelocityRadPerSec;
     }
 
     /**
@@ -288,14 +214,14 @@ public class SwerveModule {
      */
     public double getTurnAbsolutelyAbsolutePosition() {
         // ORIGINAL UNITS: rotations. Converted to radians.
-        return this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI;
+        return this.inputs.absoluteEncoderAbsolutePosition.getRadians();
     }
 
     /**
      * @return The velocity of the drive encoder, in m/sec.
      */
     public double getDriveVelocity() {
-        return this.driveEncoder.getVelocity();
+        return this.inputs.driveVelocityRadPerSec;
     }
 
     /**
@@ -303,14 +229,14 @@ public class SwerveModule {
      * @see SwerveModule
      */
     public double getTurnRelativePosition() {
-        return this.turnEncoder.getPosition();
+        return this.inputs.turnPosition.getRadians();
     }
 
     /**
      * @return The relative encoder's velocity in radians/sec.
      */
     public double getTurnRelativeVelocity() {
-        return this.turnEncoder.getVelocity();
+        return this.inputs.turnVelocityRadPerSec;
     }
 
     /**
@@ -318,8 +244,9 @@ public class SwerveModule {
      *
      * @return The current state of the module using the absolute encoder's position.
      */
+    
     public SwerveModuleState getAbsoluteModuleState() {
-        return new SwerveModuleState(driveEncoder.getVelocity(), new Rotation2d(this.getTurnAbsEncoderPosition()));
+        return new SwerveModuleState(inputs.driveVelocityRadPerSec, new Rotation2d(this.getTurnAbsEncoderPosition()));
     }
 
     /**
@@ -328,7 +255,7 @@ public class SwerveModule {
      * @return The current state of the module using the absolutely-absolute encoder's position.
      */
     public SwerveModuleState getAbsoluteAbsoluteModuleState() {
-        return new SwerveModuleState(driveEncoder.getVelocity(), new Rotation2d(this.getTurnAbsolutelyAbsolutePosition()));
+        return new SwerveModuleState(inputs.driveVelocityRadPerSec, new Rotation2d(this.getTurnAbsolutelyAbsolutePosition()));
     }
 
     /**
@@ -337,7 +264,7 @@ public class SwerveModule {
      * @return The current position of the module using the absolute encoder's position.
      */
     public SwerveModulePosition getAbsoluteModulePosition() {
-        return new SwerveModulePosition(driveEncoder.getPosition(), new Rotation2d(this.getTurnAbsEncoderPosition()));
+        return new SwerveModulePosition(this.inputs.drivePositionRad, new Rotation2d(this.getTurnAbsEncoderPosition()));
     }
 
     /**
@@ -346,7 +273,7 @@ public class SwerveModule {
      * @return The current state of the module using the relative encoder's position.
      */
     public SwerveModuleState getRelativeModuleState() {
-        return new SwerveModuleState(driveEncoder.getVelocity(), new Rotation2d(this.turnEncoder.getPosition()));
+        return new SwerveModuleState(inputs.driveVelocityRadPerSec, this.inputs.turnPosition);
     }
 
     /**
@@ -355,7 +282,7 @@ public class SwerveModule {
      * @return The current position of the module using the relative encoder's position.
      */
     public SwerveModulePosition getRelativeModulePosition() {
-        return new SwerveModulePosition(driveEncoder.getPosition(), new Rotation2d(this.turnEncoder.getPosition()));
+        return new SwerveModulePosition(this.inputs.drivePositionRad, this.inputs.turnPosition);
     }
 
     /**
@@ -365,8 +292,8 @@ public class SwerveModule {
      * @param turnVoltage  Voltage of turn motor
      */
     public void setVoltages(double driveVoltage, double turnVoltage) {
-        driveMotor.setVoltage(driveVoltage);
-        turnMotor.setVoltage(turnVoltage);
+        io.setDriveMotorVoltage(driveVoltage);
+        io.setTurnMotorVoltage(turnVoltage);
     }
 
     /**
@@ -471,17 +398,17 @@ public class SwerveModule {
     private void setDriveDesiredState(SwerveModuleState optimizedDesiredState) {
         // Calculate the drive output from the drive PID controller.
         if (Flags.DriveTrain.ENABLED && Flags.DriveTrain.ENABLE_DRIVE_MOTORS && Flags.DriveTrain.DRIVE_PID_CONTROL) {
-            drivePIDController.setReference(optimizedDesiredState.speedMetersPerSecond, ControlType.kMAXMotionVelocityControl);
+            io.setDrivePIDControllerReference(optimizedDesiredState.speedMetersPerSecond, ControlType.kMAXMotionVelocityControl);
         }
 
         // TODO: add flag for the print statements and stuff here turning on
-        double vel = driveEncoder.getVelocity();
+        double vel = inputs.driveVelocityRadPerSec;
         double tar = optimizedDesiredState.speedMetersPerSecond;
         double ratio = 0;
         if (Math.abs(tar) > 0.01) {
             ratio = vel / tar;
         }
-        //System.out.println(this.name + " velocity: " + nearestHundredth(driveEncoder.getVelocity()) + " target speed: " + nearestHundredth(optimizedDesiredState.speedMetersPerSecond) + ", ratio: " + nearestHundredth(ratio));
+        //System.out.println(this.name + " velocity: " + nearestHundredth(inputs.driveVelocityRadPerSec) + " target speed: " + nearestHundredth(optimizedDesiredState.speedMetersPerSecond) + ", ratio: " + nearestHundredth(ratio));
         //System.out.println(this.name + ", position: " + this.driveEncoder.getPosition());
     }
 
@@ -494,7 +421,7 @@ public class SwerveModule {
     private void setRotationDesiredState(SwerveModuleState optimizedDesiredState) {
         // System.out.println("turn encoder at: " + RobotMathUtil.roundNearestHundredth(this.turnEncoder.getPosition()) + ", abs val: " + RobotMathUtil.roundNearestHundredth(this.getTurningAbsEncoderPositionConverted()));
         if (Flags.DriveTrain.ENABLED && Flags.DriveTrain.ENABLE_TURN_MOTORS && Flags.DriveTrain.TURN_PID_CONTROL) {
-            turnPIDController.setReference(optimizedDesiredState.angle.getRadians(), ControlType.kPosition);
+            io.setTurnPIDControllerReference(optimizedDesiredState.angle.getRadians(), ControlType.kPosition);
         }
 
         rotationPublisher.setDouble(this.getTurnRelativePosition());
@@ -506,9 +433,9 @@ public class SwerveModule {
      *
      * @param speed The desired speed, [-1, 1]
      */
-    public void directDrive(double speed) {
+    public void directDrive(double voltage) {
         if (Flags.DriveTrain.ENABLED && Flags.DriveTrain.ENABLE_DRIVE_MOTORS) {
-            this.driveMotor.set(speed);
+            this.io.setDriveMotorVoltage(voltage);
         }
     }
 
@@ -517,9 +444,9 @@ public class SwerveModule {
      *
      * @param speed The desired speed, [-1, 1]
      */
-    public void directTurn(double speed) {
+    public void directTurn(double voltage) {
         if (Flags.DriveTrain.ENABLED && Flags.DriveTrain.ENABLE_TURN_MOTORS) {
-            this.turnMotor.set(speed);
+            this.io.setTurnMotorVoltage(voltage);
         }
     }
 }

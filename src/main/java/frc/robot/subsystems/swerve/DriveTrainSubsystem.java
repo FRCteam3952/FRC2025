@@ -39,6 +39,7 @@ import frc.robot.util.NetworkTablesUtil;
 import frc.robot.util.QuestNav;
 import frc.robot.util.Util;
 
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 // luo ge
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -68,38 +69,41 @@ public class DriveTrainSubsystem extends SubsystemBase {
     private static final Translation2d backRightLocation = new Translation2d(-RobotConstants.LEG_LENGTHS_M, -RobotConstants.LEG_LENGTHS_M);
     public static final Translation2d cameraLocation = backRightLocation.plus(new Translation2d(0.075, 0.205));
     static SwerveModuleState[] optimizedTargetStates = new SwerveModuleState[4]; // for debugging purposes
-    private final SwerveModule frontLeft = new SwerveModule(
+
+    private final SwerveModuleIO frontLeftIO = new SwerveModuleIOSpark(
             PortConstants.DTRAIN_FRONT_LEFT_DRIVE_MOTOR_ID,
             PortConstants.DTRAIN_FRONT_LEFT_ROTATION_MOTOR_ID,
             PortConstants.DTRAIN_FRONT_LEFT_CANCODER_ID,
-            "fL_12",
             INVERT_DRIVE_MOTORS,
             true
     );
-    private final SwerveModule frontRight = new SwerveModule(
+    private final SwerveModuleIO frontRightIO = new SwerveModuleIOSpark(
             PortConstants.DTRAIN_FRONT_RIGHT_DRIVE_MOTOR_ID,
             PortConstants.DTRAIN_FRONT_RIGHT_ROTATION_MOTOR_ID,
             PortConstants.DTRAIN_FRONT_RIGHT_CANCODER_ID,
-            "fR_03",
             INVERT_DRIVE_MOTORS,
             true
     );
-    private final SwerveModule backLeft = new SwerveModule(
+    private final SwerveModuleIO backLeftIO = new SwerveModuleIOSpark(
             PortConstants.DTRAIN_BACK_LEFT_DRIVE_MOTOR_ID,
             PortConstants.DTRAIN_BACK_LEFT_ROTATION_MOTOR_ID,
             PortConstants.DTRAIN_BACK_LEFT_CANCODER_ID,
-            "bL_06",
             INVERT_DRIVE_MOTORS,
             true
     );
-    private final SwerveModule backRight = new SwerveModule(
+    private final SwerveModuleIO backRightIO = new SwerveModuleIOSpark(
             PortConstants.DTRAIN_BACK_RIGHT_DRIVE_MOTOR_ID,
             PortConstants.DTRAIN_BACK_RIGHT_ROTATION_MOTOR_ID,
             PortConstants.DTRAIN_BACK_RIGHT_CANCODER_ID,
-            "bR_01",
             INVERT_DRIVE_MOTORS,
             true
     );
+
+    private final SwerveModule frontLeft = new SwerveModule("fL_12", frontLeftIO);
+    private final SwerveModule frontRight = new SwerveModule("fR_03", frontRightIO);
+    private final SwerveModule backLeft = new SwerveModule("bL_06", backLeftIO);
+    private final SwerveModule backRight = new SwerveModule("bR_01", backRightIO);
+
     public final SwerveModule[] swerveModules = {frontLeft, frontRight, backLeft, backRight};
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
     private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, RobotGyro.getRotation2d(), this.getAbsoluteModulePositions(), new Pose2d(), new Matrix<>(Nat.N3(), Nat.N1(), new double[]{0.1, 0.1, 0.1}), new Matrix<>(Nat.N3(), Nat.N1(), new double[]{0.01, 0.01, 0.1}));
@@ -327,11 +331,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
      *
      * @param speed The desired speed, [-1, 1]
      */
-    public void directDriveSpeed(double speed) { // INCHES: 10 rot ~= 18.25, ~ 9 rot ~= 15.75
-        frontLeft.directDrive(speed);
-        frontRight.directDrive(speed);
-        backLeft.directDrive(speed);
-        backRight.directDrive(speed);
+    public void directDriveSpeed(double voltage) { // INCHES: 10 rot ~= 18.25, ~ 9 rot ~= 15.75
+        frontLeft.directDrive(voltage);
+        frontRight.directDrive(voltage);
+        backLeft.directDrive(voltage);
+        backRight.directDrive(voltage);
     }
 
     /**
@@ -339,11 +343,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
      *
      * @param speed The desired speed, [-1, 1]
      */
-    public void directTurnSpeed(double speed) {
-        frontLeft.directTurn(speed);
-        frontRight.directTurn(speed);
-        backLeft.directTurn(speed);
-        backRight.directTurn(speed);
+    public void directTurnSpeed(double voltage) {
+        frontLeft.directTurn(voltage);
+        frontRight.directTurn(voltage);
+        backLeft.directTurn(voltage);
+        backRight.directTurn(voltage);
     }
 
     /**
