@@ -105,10 +105,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
     private final SwerveModule backLeft = new SwerveModule("bL_06", backLeftIO);
     private final SwerveModule backRight = new SwerveModule("bR_01", backRightIO);
 
-    public final GyroIO gyroIO = new AdisGyroIO();
+    private final GyroIO gyroIO = new AdisGyroIO();
+    private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
     public final SwerveModule[] swerveModules = {frontLeft, frontRight, backLeft, backRight};
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
-    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, RobotGyro.getRotation2d(), this.getAbsoluteModulePositions(), new Pose2d(), new Matrix<>(Nat.N3(), Nat.N1(), new double[]{0.1, 0.1, 0.1}), new Matrix<>(Nat.N3(), Nat.N1(), new double[]{0.01, 0.01, 0.1}));
+    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(0), this.getAbsoluteModulePositions(), new Pose2d(), new Matrix<>(Nat.N3(), Nat.N1(), new double[]{0.1, 0.1, 0.1}), new Matrix<>(Nat.N3(), Nat.N1(), new double[]{0.01, 0.01, 0.1}));
 
     private final Field2d field = new Field2d();
     private final Field2d estimatedField = new Field2d();
@@ -153,7 +154,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
               break;
           }*/
 
-        RobotGyro.resetGyroAngle();
+        gyroIO.resetGyroAngle();
 
         SmartDashboard.putData("Field", field);
         SmartDashboard.putData("estimated field", estimatedField);
@@ -161,7 +162,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         QuestNav.INSTANCE.zeroPosition();
         QuestNav.INSTANCE.zeroHeading();
 
-        // this.setPose(new Pose2d(1.7, 5.50, RobotGyro.getRotation2d()));
+        // this.setPose(new Pose2d(1.7, 5.50, gyroInputs.yawPosition));
         // this.setPose(GeometryUtil.flipFieldPose(new Pose2d(1.37, 5.52, new Rotation2d())));
 
         /*
@@ -205,8 +206,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
      * @param pose The desired current code
      */
     public void setPose(Pose2d pose) {
-        RobotGyro.setGyroAngle(pose.getRotation().getDegrees());
-        System.out.println(RobotGyro.getRotation2d());
+        gyroIO.setGyroAngle(pose.getRotation().getDegrees());
+        // System.out.println(gyroIO.getRotation2d());
         poseEstimator.resetPosition(pose.getRotation(), this.getAbsoluteModulePositions(), pose);
     }
 
@@ -272,7 +273,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
         ChassisSpeeds chassisSpeeds;
         if (fieldRelative) {
-            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardSpeed, sidewaysSpeed, rotSpeed, RobotGyro.getRotation2d());
+            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardSpeed, sidewaysSpeed, rotSpeed, gyroInputs.yawPosition);
         } else {
             chassisSpeeds = new ChassisSpeeds(forwardSpeed, sidewaysSpeed, rotSpeed);
         }
@@ -306,22 +307,22 @@ public class DriveTrainSubsystem extends SubsystemBase {
                 lockedHeadingMode = false;
             } else if (lockedHeadingMode) {
                 // locked heading mode is ON! move back towards previous orientation.
-                double headingError = lockedHeading.getRadians() - RobotGyro.getRotation2d().getRadians();
+                double headingError = lockedHeading.getRadians() - gyroInputs.yawPosition.getRadians();
                 double unboundedRotSpeed = 1.0 * headingError; // 1.0 is changeable constant (like kP)
                 rotSpeed = MathUtil.clamp(unboundedRotSpeed, -0.3, 0.3);
             } else {
                 // if we JUST STOPPED turning, we store the current orientation so we can move back towards it later
                 lockedHeadingMode = true;
-                lockedHeading = RobotGyro.getRotation2d();
+                lockedHeading = gyroInputs.yawPosition;
             }
         }
         return rotSpeed;
     }
 
     public ChassisSpeeds angularVelocitySkewCorrection(ChassisSpeeds robotRelativeVelocity, double angularVelocityCoefficient) {
-        var angularVelocity = new Rotation2d(RobotGyro.getYawAngularVelocity().in(RadiansPerSecond) * angularVelocityCoefficient);
+        var angularVelocity = new Rotation2d(gyroInputs.yawVel.in(RadiansPerSecond) * angularVelocityCoefficient);
         if (angularVelocity.getRadians() != 0.0) {
-            Rotation2d heading = RobotGyro.getRotation2d();
+            Rotation2d heading = gyroInputs.yawPosition;
             ChassisSpeeds fieldRelativeVelocity = ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeVelocity, heading);
             robotRelativeVelocity = ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeVelocity, heading.plus(angularVelocity));
         }
@@ -394,7 +395,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         relativeSwerveStatePublisher.set(new SwerveModuleState[]{frontLeft.getRelativeModuleState(), frontRight.getRelativeModuleState(), backLeft.getRelativeModuleState(), backRight.getRelativeModuleState()});
         //posts robot position to network table
         posePositionPublisher.set(this.getPose());
-        robotRotationPublisher.set(RobotGyro.getRotation2d());
+        robotRotationPublisher.set(gyroInputs.yawPosition);
         questNavPublisher.set(QuestNav.INSTANCE.getPose());
 
         //noinspection StatementWithEmptyBody
@@ -407,6 +408,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         // }
 
         this.updateOdometry();
+        gyroIO.updateInputs(gyroInputs);
         // this.updateOdometryWithJetsonVision();
         field.setRobotPose(getPose());
         // System.out.println(this.getPose());
@@ -445,7 +447,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
      * Updates the field relative position of the robot using module state readouts.
      */
     public void updateOdometry() {
-        this.poseEstimator.update(RobotGyro.getRotation2d(), new SwerveModulePosition[]{frontLeft.getAbsoluteModulePosition(), frontRight.getAbsoluteModulePosition(), backLeft.getAbsoluteModulePosition(), backRight.getAbsoluteModulePosition()});
+        this.poseEstimator.update(gyroInputs.yawPosition, new SwerveModulePosition[]{frontLeft.getAbsoluteModulePosition(), frontRight.getAbsoluteModulePosition(), backLeft.getAbsoluteModulePosition(), backRight.getAbsoluteModulePosition()});
     }
 
     /**
@@ -455,7 +457,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         // ArrayList<AprilTagHandler.RobotPoseAndTagDistance> tags = aprilTagHandler.getJetsonAprilTagPoses();
         // double timestamp = Timer.getFPGATimestamp() - 0.5;
         // Pose2d robotPose = this.getPose();
-        // Rotation2d robotRotation = RobotGyro.getRotation2d();
+        // Rotation2d robotRotation = gyroInputs.yawPosition;
         // for(AprilTagHandler.RobotPoseAndTagDistance poseAndTag : tags) {
         //     Pose2d estimatedPose = poseAndTag.fieldRelativePose();
         //     double poseDiff = estimatedPose.getTranslation().getDistance(robotPose.getTranslation());
