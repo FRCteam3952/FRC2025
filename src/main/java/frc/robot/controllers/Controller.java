@@ -14,7 +14,7 @@ public class Controller {
     public static final double IGNORE_DELTA = 0.08;
 
     private final ControllerIO io;
-    private AbstractControllerInputsAutoLogged inputs;
+    private ControllerInputsAutoLogged inputs;
     public final String name;
 
     public Optional<Trigger> leftButtonTrigger = Optional.empty();
@@ -29,7 +29,7 @@ public class Controller {
     public Controller(ControllerIO io)
     {
         this.io = io;
-        this.inputs = new AbstractControllerInputsAutoLogged();
+        this.inputs = new ControllerInputsAutoLogged();
         this.name = this.io.getClass().toString().split(" ")[1];
     }
 

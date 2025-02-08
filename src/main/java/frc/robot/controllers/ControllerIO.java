@@ -26,5 +26,5 @@ public interface ControllerIO {
         public int POV = 0;
     }
 
-    public abstract void updateInputs(AbstractControllerInputsAutoLogged inputs);
+    public abstract void updateInputs(ControllerInputsAutoLogged inputs);
 }

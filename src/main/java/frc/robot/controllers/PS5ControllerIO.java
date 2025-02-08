@@ -38,7 +38,7 @@ public class PS5ControllerIO implements ControllerIO {
     }
 
     @Override
-    public void updateInputs(AbstractControllerInputsAutoLogged inputs)
+    public void updateInputs(ControllerInputsAutoLogged inputs)
     {
         inputs.leftVerticalMovement = this.controller.getLeftY();
         inputs.leftHorizontalMovement = this.controller.getLeftX();
