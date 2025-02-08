@@ -1,16 +1,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.controllers.AbstractController;
+import frc.robot.controllers.Controller;
 import frc.robot.subsystems.swerve.DriveTrainSubsystem;
 import frc.robot.subsystems.swerve.SwerveModule;
 import frc.robot.util.Util;
 
 public class TestDriveCommand extends Command {
     private final DriveTrainSubsystem driveTrain;
-    private final AbstractController joystick;
+    private final Controller joystick;
 
-    public TestDriveCommand(DriveTrainSubsystem driveTrain, AbstractController joystick) {
+    public TestDriveCommand(DriveTrainSubsystem driveTrain, Controller joystick) {
         this.driveTrain = driveTrain;
         this.joystick = joystick;
 

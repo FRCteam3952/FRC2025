@@ -1,16 +1,16 @@
 package frc.robot.commands;
 
+import frc.robot.controllers.Controller;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Flags;
-import frc.robot.controllers.AbstractController;
 import frc.robot.subsystems.swerve.DriveTrainSubsystem;
 import frc.robot.util.Util;
 
 public class ManualDriveCommand extends Command {
     public static final double MAX_SPEED_METERS_PER_SEC = Flags.DriveTrain.LOWER_MAX_SPEED ? 1.5 : 3;
     private final DriveTrainSubsystem driveTrain;
-    private final AbstractController joystick;
+    private final Controller joystick;
     // private final AprilTagHandler aprilTagHandler;
     private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(1);
     private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(1);
@@ -19,7 +19,7 @@ public class ManualDriveCommand extends Command {
     // private final LinearFilter filter = LinearFilter.singlePoleIIR(0.1, 0.02);
     // private boolean wasAutomaticallyDrivingLastFrame = false;
 
-    public ManualDriveCommand(DriveTrainSubsystem driveTrain, AbstractController joystick) { //AprilTagHandler aprilTagHandler) {
+    public ManualDriveCommand(DriveTrainSubsystem driveTrain, Controller joystick) { //AprilTagHandler aprilTagHandler) {
         this.driveTrain = driveTrain;
         this.joystick = joystick;
         // this.aprilTagHandler = aprilTagHandler;
@@ -48,9 +48,6 @@ public class ManualDriveCommand extends Command {
         double flip = flipFactor();
         double ySpeed = Util.squareKeepSign(this.ySpeedLimiter.calculate(-this.joystick.getLeftVerticalMovement()  * flip)) * MAX_SPEED_METERS_PER_SEC;
         double xSpeed = Util.squareKeepSign(this.xSpeedLimiter.calculate(this.joystick.getLeftHorizontalMovement() * flip)) * MAX_SPEED_METERS_PER_SEC;
-
-        double targetAngle = Math.tan(this.joystick.getLeftVerticalMovement() / this.joystick.getLeftHorizontalMovement());
-
 
         double rotSpeedMultiplier = 3.0;
 

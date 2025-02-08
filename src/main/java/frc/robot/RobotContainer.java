@@ -11,9 +11,10 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.TestDriveCommand;
 import frc.robot.controllers.AbstractController;
+import frc.robot.controllers.Controller;
 import frc.robot.controllers.FlightJoystick;
 import frc.robot.controllers.NintendoProController;
-import frc.robot.controllers.PS5Controller;
+import frc.robot.controllers.PS5ControllerIO;
 import frc.robot.subsystems.PowerHandler;
 import frc.robot.subsystems.staticsubsystems.LimeLight;
 import frc.robot.subsystems.swerve.DriveTrainSubsystem;
@@ -30,9 +31,11 @@ public class RobotContainer {
     */
 
     private final FlightJoystick sideJoystick = new FlightJoystick(new CommandJoystick(OperatorConstants.RIGHT_JOYSTICK_PORT));
-    private final NintendoProController nintendoProController = new NintendoProController(new CommandXboxController(OperatorConstants.NINTENDO_PRO_CONTROLLER));
-    private final PS5Controller ps5Controller = new PS5Controller(new CommandPS5Controller(OperatorConstants.PS5_CONTROLLER));
-    private final AbstractController primaryController = Flags.Operator.NINTENDO_SWITCH_CONTROLLER_AS_PRIMARY ? this.nintendoProController : this.ps5Controller;
+
+    // private final NintendoProController nintendoProController = new NintendoProController(new CommandXboxController(OperatorConstants.NINTENDO_PRO_CONTROLLER));
+    private final Controller primaryController = new Controller(new PS5ControllerIO(new CommandPS5Controller(OperatorConstants.PS5_CONTROLLER)));
+
+    // private final AbstractController primaryController = Flags.Operator.NINTENDO_SWITCH_CONTROLLER_AS_PRIMARY ? this.nintendoProController : this.ps5Controller;
     private final PowerHandler powerHandler = new PowerHandler();
     // private final AprilTagHandler aprilTagHandler = new AprilTagHandler();
 

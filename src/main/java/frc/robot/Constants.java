@@ -1,6 +1,7 @@
 package frc.robot;
 
 import frc.robot.util.ControlHandler.TriggerType;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * Intended for constants on the robot that should rarely change (especially in a competition scenario). These values tend to be primitive values (but are not necessarily).
@@ -8,6 +9,15 @@ import frc.robot.util.ControlHandler.TriggerType;
  * This is different from the {@link frc.robot.Flags Flags} class, which toggles functionality on the robot and may be changed more often.
  */
 public final class Constants {
+    public static final Mode simMode = Mode.SIM;
+    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+
+    public static enum Mode {
+        REAL,
+        SIM,
+        REPLAY,
+    }
+
     private Constants() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
