@@ -253,7 +253,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
      * @param rotSpeed      Angular rate of the robot.
      * @param fieldRelative Whether the provided x and y speeds are relative to the field.
      */
-    @SuppressWarnings("unused")
     public void drive(double forwardSpeed, double sidewaysSpeed, double rotSpeed, boolean fieldRelative) {
         if (!Flags.DriveTrain.ENABLED) {
             return;
@@ -313,7 +312,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     }
 
     public ChassisSpeeds angularVelocitySkewCorrection(ChassisSpeeds robotRelativeVelocity, double angularVelocityCoefficient) {
-        var angularVelocity = new Rotation2d(gyroInputs.yawVel.in(RadiansPerSecond) * angularVelocityCoefficient);
+        var angularVelocity = Rotation2d.fromDegrees(gyroInputs.yawVelocityDegreesPerSecond * angularVelocityCoefficient);
         if (angularVelocity.getRadians() != 0.0) {
             Rotation2d heading = gyroInputs.yawPosition;
             ChassisSpeeds fieldRelativeVelocity = ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeVelocity, heading);

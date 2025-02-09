@@ -390,7 +390,7 @@ public class SwerveModule {
     private void setDriveDesiredState(SwerveModuleState optimizedDesiredState) {
         // Calculate the drive output from the drive PID controller.
         if (Flags.DriveTrain.ENABLED && Flags.DriveTrain.ENABLE_DRIVE_MOTORS && Flags.DriveTrain.DRIVE_PID_CONTROL) {
-            io.setDrivePIDControllerReference(optimizedDesiredState.speedMetersPerSecond, ControlType.kMAXMotionVelocityControl);
+            io.setDriveVelocity(optimizedDesiredState.speedMetersPerSecond);
         }
 
         // TODO: add flag for the print statements and stuff here turning on
@@ -413,7 +413,7 @@ public class SwerveModule {
     private void setRotationDesiredState(SwerveModuleState optimizedDesiredState) {
         // System.out.println("turn encoder at: " + RobotMathUtil.roundNearestHundredth(this.turnEncoder.getPosition()) + ", abs val: " + RobotMathUtil.roundNearestHundredth(this.getTurningAbsEncoderPositionConverted()));
         if (Flags.DriveTrain.ENABLED && Flags.DriveTrain.ENABLE_TURN_MOTORS && Flags.DriveTrain.TURN_PID_CONTROL) {
-            io.setTurnPIDControllerReference(optimizedDesiredState.angle.getRadians(), ControlType.kPosition);
+            io.setTurnPosition(optimizedDesiredState.angle);
         }
 
         rotationPublisher.setDouble(this.getTurnRelativePosition());

@@ -12,6 +12,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
 public class SwerveModuleIOSpark implements SwerveModuleIO {
@@ -59,6 +60,7 @@ public class SwerveModuleIOSpark implements SwerveModuleIO {
 
         turnConfig.encoder
                 .positionConversionFactor(150d / 7d * Math.PI / 180 / 1.28)
+        // 2/8/2025 Addison testifies this conversion factor will output degrees.
                 .velocityConversionFactor(150d / 7d / 60d * Math.PI / 180 / 1.28);
 
         //this.turnEncoder.setPositionConversionFactor(150d / 7d * Math.PI / 180 / 1.28); // ???
@@ -124,12 +126,24 @@ public class SwerveModuleIOSpark implements SwerveModuleIO {
     }
 
     @Override
-    public void setDrivePIDControllerReference(double desiredSpeed, ControlType controlType) {
-        this.drivePIDController.setReference(desiredSpeed, controlType);
+    public void setDriveVelocity(double desiredSpeed) {
+        this.drivePIDController.setReference(desiredSpeed, ControlType.kMAXMotionVelocityControl);
     }
 
     @Override
-    public void setTurnPIDControllerReference(double desiredAngle, ControlType controlType) {
-        this.turnPIDController.setReference(desiredAngle, controlType);
+    public void setTurnPosition(Rotation2d desiredAngle) {
+        this.turnPIDController.setReference(desiredAngle.getRadians(), ControlType.kPosition);
+    }
+
+    @Override
+    public void updateInputs(SwerveModuleIOInputs inputs) {
+        inputs.drivePositionRad = this.driveEncoder.getPosition();
+        inputs.driveVelocityRadPerSec = this.driveEncoder.getVelocity();
+        inputs.driveCurrentAmps = this.driveMotor.getOutputCurrent();
+
+        inputs.turnPosition = Rotation2d.fromRotations(this.turnEncoder.getPosition());
+        inputs.turnVelocityRadPerSec = this.turnEncoder.getVelocity() / 180 * Math.PI;
+        inputs.absoluteEncoderAbsolutePosition = Rotation2d.fromRotations(
+            this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble());
     }
 }

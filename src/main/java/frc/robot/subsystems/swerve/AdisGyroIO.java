@@ -15,11 +15,11 @@ public class AdisGyroIO implements GyroIO{
     }
 
     public void updateInputs(GyroIOInputs inputs) {
-        inputs.yawVel.mut_setMagnitude(gyro.getRate());
+        inputs.yawVelocityDegreesPerSecond = gyro.getRate();
         inputs.yawPosition = new Rotation2d(-Math.toRadians(gyro.getAngle(IMUAxis.kZ)));
-        inputs.accelX = gyro.getAccelX();
-        inputs.accelY = gyro.getAccelY();
-        inputs.accelZ = gyro.getAccelZ();
+        inputs.xAcceleration = gyro.getAccelX();
+        inputs.yAcceleration = gyro.getAccelY();
+        inputs.zAcceleration = gyro.getAccelZ();
     }
 
     /**
