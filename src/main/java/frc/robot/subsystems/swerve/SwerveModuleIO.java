@@ -1,13 +1,8 @@
 package frc.robot.subsystems.swerve;
 
 import org.littletonrobotics.junction.AutoLog;
-
-import com.ctre.phoenix6.StatusSignal;
 import com.revrobotics.spark.SparkBase;
-
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 
 public interface SwerveModuleIO {
     @AutoLog

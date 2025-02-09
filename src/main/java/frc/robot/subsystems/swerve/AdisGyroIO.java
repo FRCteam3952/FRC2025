@@ -2,11 +2,9 @@ package frc.robot.subsystems.swerve;
 
 // import frc.robot.subsystems.staticsubsystems.RobotGyro; // worst
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 public class AdisGyroIO implements GyroIO{
     private final ADIS16470_IMU gyro = new ADIS16470_IMU();

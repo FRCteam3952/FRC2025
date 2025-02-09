@@ -3,7 +3,6 @@ package frc.robot.subsystems.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import org.littletonrobotics.junction.AutoLog;
-import frc.robot.subsystems.staticsubsystems.RobotGyro;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 

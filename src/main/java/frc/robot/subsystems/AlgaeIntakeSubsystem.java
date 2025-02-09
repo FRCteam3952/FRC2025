@@ -4,15 +4,12 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Servo;
 import frc.robot.Constants;
 import frc.robot.Constants.PortConstants;
-import frc.robot.util.ThroughboreEncoder;
 
 public class AlgaeIntakeSubsystem extends SubsystemBase{ // This subsystem needing much more feature only has 1 neo currently
     // public class 
@@ -24,8 +21,11 @@ public class AlgaeIntakeSubsystem extends SubsystemBase{ // This subsystem needi
     public AlgaeIntakeSubsystem(){
         algaeIntakeMotor = new SparkMax(Constants.PortConstants.CAN.ALGAE_MOTOR_ID, MotorType.kBrushless);
         // leaving these undefined seems better than adding them with bad values
-        algaeLeftServo = new Servo(PortConstants.ALGAE_LEFT_SERVO_PORT);
-        algaeRightServo = new Servo(PortConstants.ALGAE_RIGHT_SERVO_PORT);
+        if (PortConstants.PWM.ALGAE_LEFT_SERVO_PORT != -1 || PortConstants.PWM.ALGAE_RIGHT_SERVO_PORT != -1) {
+            throw new UnsupportedOperationException("You need to set the port for the AlgaeIntakeSubsystem.");
+        }
+        algaeLeftServo = new Servo(PortConstants.PWM.ALGAE_LEFT_SERVO_PORT);
+        algaeRightServo = new Servo(PortConstants.PWM.ALGAE_RIGHT_SERVO_PORT);
         
         SparkMaxConfig algaeMotorConfig = new SparkMaxConfig();
 

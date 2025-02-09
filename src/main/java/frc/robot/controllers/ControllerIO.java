@@ -2,9 +2,6 @@ package frc.robot.controllers;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 public interface ControllerIO {
     @AutoLog
     public static class ControllerInputs {

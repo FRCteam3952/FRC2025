@@ -1,14 +1,14 @@
 package frc.robot.commands.testers;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.controllers.AbstractController;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.controllers.Controller;
 
 public class TestElevatorCommand extends Command {
     private final ElevatorSubsystem telescopingArm;
-    private final AbstractController joystick;
+    private final Controller joystick;
 
-    public TestElevatorCommand(ElevatorSubsystem telescopingArm, AbstractController joystick) {
+    public TestElevatorCommand(ElevatorSubsystem telescopingArm, Controller joystick) {
         this.telescopingArm = telescopingArm;
         this.joystick = joystick;
 

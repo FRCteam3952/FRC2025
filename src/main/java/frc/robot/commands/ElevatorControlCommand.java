@@ -3,18 +3,18 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.controllers.AbstractController;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.controllers.Controller;
 
 public class ElevatorControlCommand extends Command {
     private final ElevatorSubsystem elevator;
-    private final AbstractController controller;
+    // private final Controller controller;
 
     private final Trigger uB, leftB, lowB, rB;
     
-    public ElevatorControlCommand(ElevatorSubsystem elevator, AbstractController c) {
+    public ElevatorControlCommand(ElevatorSubsystem elevator, Controller c) {
         this.elevator = elevator;
-        this.controller = c;
+        // this.controller = c;
 
         uB = c.upperButton();
         leftB = c.leftButton();
