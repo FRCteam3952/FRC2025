@@ -15,9 +15,6 @@ import frc.robot.Flags;
 import frc.robot.util.NetworkTablesUtil;
 import org.littletonrobotics.junction.Logger;
 
-import static frc.robot.util.Util.bringAngleWithinUnitCircle;
-import static frc.robot.util.Util.nearestHundredth;
-
 /**
  * There are three existing readouts for the module's rotational position.
  *
@@ -122,17 +119,23 @@ public class SwerveModule {
     private static SwerveModuleState optimize(
             SwerveModuleState desiredState, Rotation2d currentAngle) {
         var delta = desiredState.angle.minus(currentAngle);
+        // System.out.println(" -------------------------------------------------------- ");
+        // System.out.println("delta: " + delta);
         if (Math.abs(delta.getDegrees()) > SWERVE_ROTATION_OPTIMIZATION_THRESH_DEG) {
+            // System.out.println("optimizing!");
+            // System.out.println(" -------------------------------------------------------- ");
             return new SwerveModuleState(
                     -desiredState.speedMetersPerSecond,
                     desiredState.angle.rotateBy(Rotation2d.fromDegrees(180.0)));
         } else {
+            // System.out.println("not optimizing :(");
+            // System.out.println(" -------------------------------------------------------- ");
             return new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
         }
     }
 
     private SwerveModuleState getCosineCompensatedState(SwerveModuleState desiredState) {
-        double cosineScalar = 1.0;
+        double cosineScalar = 1;
         // Taken from the CTRE SwerveModule class.
         // https://api.ctr-electronics.com/phoenix6/release/java/src-html/com/ctre/phoenix6/mechanisms/swerve/SwerveModule.html#line.46
         /* From FRC 900's whitepaper, we add a cosine compensator to the applied drive velocity */
@@ -414,7 +417,7 @@ public class SwerveModule {
         }
 
         rotationPublisher.setDouble(this.getTurnRelativePosition());
-        System.out.println("target: " + nearestHundredth(bringAngleWithinUnitCircle(optimizedDesiredState.angle.getDegrees())) + ", rel: " + nearestHundredth(bringAngleWithinUnitCircle(this.getTurnRelativePosition() * 180 / Math.PI)) + ", abs: " + nearestHundredth(bringAngleWithinUnitCircle(this.getTurnAbsEncoderPosition() * 180 / Math.PI)));
+        // System.out.println("target: " + nearestHundredth(bringAngleWithinUnitCircle(optimizedDesiredState.angle.getDegrees())) + ", rel: " + nearestHundredth(bringAngleWithinUnitCircle(this.getTurnRelativePosition() * 180 / Math.PI)) + ", abs: " + nearestHundredth(bringAngleWithinUnitCircle(this.getTurnAbsEncoderPosition() * 180 / Math.PI)));
     }
 
     /**

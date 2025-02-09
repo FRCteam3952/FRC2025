@@ -7,6 +7,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * An abstract class for the joystick wrappers. Contains the common methods that we wrap around.
  */
 public abstract class AbstractController {
+    static double deadzone(double val, double deadzone) {
+        if(Math.abs(val) < deadzone) {
+            return 0;
+        }
+        return val;
+    }
+
     /**
      * Gets the horizontal movement of the right-side joystick of the controller.
      *

@@ -9,6 +9,7 @@ import frc.robot.util.Util;
 
 public class ManualDriveCommand extends Command {
     public static final double MAX_SPEED_METERS_PER_SEC = Flags.DriveTrain.LOWER_MAX_SPEED ? 1.5 : 3;
+    public static final double MAX_ROT_SPEED_ANGULAR = 3;
     private final DriveTrainSubsystem driveTrain;
     private final Controller joystick;
     // private final AprilTagHandler aprilTagHandler;
@@ -46,12 +47,11 @@ public class ManualDriveCommand extends Command {
         // System.out.println("vert: " + this.joystick.getRightVerticalMovement() + ", hor: " + this.joystick.getRightHorizontalMovement());
         // this.driveTrain.drive(this.joystick.getVerticalMovement());
         double flip = flipFactor();
-        double ySpeed = Util.squareKeepSign(this.ySpeedLimiter.calculate(-this.joystick.getLeftVerticalMovement()  * flip)) * MAX_SPEED_METERS_PER_SEC;
+        double ySpeed = Util.squareKeepSign(this.ySpeedLimiter.calculate(this.joystick.getLeftVerticalMovement()  * flip)) * MAX_SPEED_METERS_PER_SEC;
         double xSpeed = Util.squareKeepSign(this.xSpeedLimiter.calculate(this.joystick.getLeftHorizontalMovement() * flip)) * MAX_SPEED_METERS_PER_SEC;
-
-        double rotSpeedMultiplier = 3.0;
-
-        double rotSpeed = -this.joystick.getRightHorizontalMovement() * rotSpeedMultiplier;
+        // System.out.println("xSpeed = " + xSpeed);
+        // System.out.println("ySpeed = " + ySpeed);
+        double rotSpeed = -this.joystick.getRightHorizontalMovement() * MAX_ROT_SPEED_ANGULAR;
 
 
         // System.out.println("forward speed: " + ySpeed + ", x speed: " + xSpeed);

@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
- * A wrapper around {@link CommandXboxController}. Our left joystick is not working right now though, so I'm just going to use the right side one for now.
+ * A wrapper around {@link CommandXboxController}.
  */
 public class XboxController extends AbstractController {
     public static final double IGNORE_DELTA = 0.08;
@@ -15,38 +15,24 @@ public class XboxController extends AbstractController {
         this.controller = controller;
     }
 
-    /**
-     * The XBox controller sometimes returns a value of 0.01 to 0.03 when at rest. To avoid floating point errors, this method corrects for that.
-     *
-     * @param value The value to correct
-     * @return 0.0 if the value is within the deadzone {@link #IGNORE_DELTA}, otherwise the value
-     */
-    private static double correctDeadzone(double value) {
-        if (Math.abs(value) < IGNORE_DELTA) {
-            return 0;
-        } else {
-            return value;
-        }
-    }
-
     @Override
     public double getRightHorizontalMovement() {
-        return correctDeadzone(controller.getRightX());
+        return AbstractController.deadzone(controller.getRightX(), IGNORE_DELTA);
     }
 
     @Override
     public double getRightVerticalMovement() {
-        return correctDeadzone(controller.getRightY());
+        return AbstractController.deadzone(controller.getRightY(), IGNORE_DELTA);
     }
 
     @Override
     public double getLeftHorizontalMovement() {
-        return correctDeadzone(controller.getLeftX());
+        return AbstractController.deadzone(controller.getLeftX(), IGNORE_DELTA);
     }
 
     @Override
     public double getLeftVerticalMovement() {
-        return correctDeadzone(controller.getLeftY());
+        return AbstractController.deadzone(controller.getLeftY(), IGNORE_DELTA);
     }
 
     @Override

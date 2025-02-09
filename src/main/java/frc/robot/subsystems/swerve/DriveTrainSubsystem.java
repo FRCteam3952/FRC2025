@@ -35,20 +35,9 @@ import frc.robot.Flags;
 import frc.robot.Robot;
 import frc.robot.commands.ManualDriveCommand;
 // import frc.robot.subsystems.staticsubsystems.RobotGyro;
-import frc.robot.subsystems.swerve.AdisGyroIO;
+// import frc.robot.subsystems.swerve.AdisGyroIO;
 import frc.robot.util.NetworkTablesUtil;
 import frc.robot.util.QuestNav;
-import frc.robot.util.Util;
-
-import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
-// luo ge
-import org.littletonrobotics.junction.LogFileUtil;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import org.littletonrobotics.urcl.URCL;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
@@ -72,30 +61,30 @@ public class DriveTrainSubsystem extends SubsystemBase {
     static SwerveModuleState[] optimizedTargetStates = new SwerveModuleState[4]; // for debugging purposes
 
     private final SwerveModuleIO frontLeftIO = new SwerveModuleIOSpark(
-            PortConstants.DTRAIN_FRONT_LEFT_DRIVE_MOTOR_ID,
-            PortConstants.DTRAIN_FRONT_LEFT_ROTATION_MOTOR_ID,
-            PortConstants.DTRAIN_FRONT_LEFT_CANCODER_ID,
+            PortConstants.CAN.DTRAIN_FRONT_LEFT_DRIVE_MOTOR_ID,
+            PortConstants.CAN.DTRAIN_FRONT_LEFT_ROTATION_MOTOR_ID,
+            PortConstants.CAN.DTRAIN_FRONT_LEFT_CANCODER_ID,
             INVERT_DRIVE_MOTORS,
             true
     );
     private final SwerveModuleIO frontRightIO = new SwerveModuleIOSpark(
-            PortConstants.DTRAIN_FRONT_RIGHT_DRIVE_MOTOR_ID,
-            PortConstants.DTRAIN_FRONT_RIGHT_ROTATION_MOTOR_ID,
-            PortConstants.DTRAIN_FRONT_RIGHT_CANCODER_ID,
+            PortConstants.CAN.DTRAIN_FRONT_RIGHT_DRIVE_MOTOR_ID,
+            PortConstants.CAN.DTRAIN_FRONT_RIGHT_ROTATION_MOTOR_ID,
+            PortConstants.CAN.DTRAIN_FRONT_RIGHT_CANCODER_ID,
             INVERT_DRIVE_MOTORS,
             true
     );
     private final SwerveModuleIO backLeftIO = new SwerveModuleIOSpark(
-            PortConstants.DTRAIN_BACK_LEFT_DRIVE_MOTOR_ID,
-            PortConstants.DTRAIN_BACK_LEFT_ROTATION_MOTOR_ID,
-            PortConstants.DTRAIN_BACK_LEFT_CANCODER_ID,
+            PortConstants.CAN.DTRAIN_BACK_LEFT_DRIVE_MOTOR_ID,
+            PortConstants.CAN.DTRAIN_BACK_LEFT_ROTATION_MOTOR_ID,
+            PortConstants.CAN.DTRAIN_BACK_LEFT_CANCODER_ID,
             INVERT_DRIVE_MOTORS,
             true
     );
     private final SwerveModuleIO backRightIO = new SwerveModuleIOSpark(
-            PortConstants.DTRAIN_BACK_RIGHT_DRIVE_MOTOR_ID,
-            PortConstants.DTRAIN_BACK_RIGHT_ROTATION_MOTOR_ID,
-            PortConstants.DTRAIN_BACK_RIGHT_CANCODER_ID,
+            PortConstants.CAN.DTRAIN_BACK_RIGHT_DRIVE_MOTOR_ID,
+            PortConstants.CAN.DTRAIN_BACK_RIGHT_ROTATION_MOTOR_ID,
+            PortConstants.CAN.DTRAIN_BACK_RIGHT_CANCODER_ID,
             INVERT_DRIVE_MOTORS,
             true
     );
@@ -113,7 +102,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
     private final Field2d field = new Field2d();
     private final Field2d estimatedField = new Field2d();
-    private final Field2d limelightField = new Field2d();
+    // private final Field2d limelightField = new Field2d();
     // uploads the intended, estimated, and actual states of the robot.
     StructArrayPublisher<SwerveModuleState> targetSwerveStatePublisher = NetworkTablesUtil.MAIN_ROBOT_TABLE.getStructArrayTopic("TargetStates", SwerveModuleState.struct).publish();
     StructArrayPublisher<SwerveModuleState> realSwerveStatePublisher = NetworkTablesUtil.MAIN_ROBOT_TABLE.getStructArrayTopic("ActualStates", SwerveModuleState.struct).publish();
@@ -264,6 +253,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
      * @param rotSpeed      Angular rate of the robot.
      * @param fieldRelative Whether the provided x and y speeds are relative to the field.
      */
+    @SuppressWarnings("unused")
     public void drive(double forwardSpeed, double sidewaysSpeed, double rotSpeed, boolean fieldRelative) {
         if (!Flags.DriveTrain.ENABLED) {
             return;
@@ -296,6 +286,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         targetSwerveStatePublisher.set(optimizedTargetStates);
     }
     
+    @SuppressWarnings("unused")
     private double applyLockHeadingMode(double forwardSpeed, double sidewaysSpeed, double rotSpeed) {
         double speed = Math.sqrt(Math.pow(forwardSpeed, 2) + Math.pow(sidewaysSpeed, 2));
         boolean isMoving = speed > LOCK_HEADING_THRESHOLD;
@@ -309,7 +300,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
                 // locked heading mode is ON! move back towards previous orientation.
                 double headingError = lockedHeading.getRadians() - gyroInputs.yawPosition.getRadians();
                 double unboundedRotSpeed = 1.0 * headingError; // 1.0 is changeable constant (like kP)
-                rotSpeed = MathUtil.clamp(unboundedRotSpeed, -0.3, 0.3);
+                if(unboundedRotSpeed >= 0.005) {
+                    rotSpeed = MathUtil.clamp(unboundedRotSpeed, -0.3, 0.3);
+                }
             } else {
                 // if we JUST STOPPED turning, we store the current orientation so we can move back towards it later
                 lockedHeadingMode = true;

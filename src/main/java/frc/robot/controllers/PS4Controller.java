@@ -1,89 +1,39 @@
 package frc.robot.controllers;
 
-import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
- * A wrapper around {@link CommandPS5Controller}.
+ * A wrapper around {@link CommandPS4Controller}.
  */
-public class PS5Controller extends AbstractController {
-    public static final double IGNORE_DELTA = 0.08;
-// /**
-//  * A wrapper around {@link CommandPS5Controller}. Our left joystick is not working right now though, so I'm just going to use the right side one for now.
-//  */
-// public class PS5Controller extends AbstractController {
-//     @AutoLog
-//     public static class PS5ControllerInputs {
-//         public double leftVerticalMovement;
-//         public double leftHorizontalMovement;
-//         public double rightVerticalMovement;
-//         public double rightHorizontalMovement;
+public class PS4Controller extends AbstractController {
+    public static final double IGNORE_DELTA = 0.1;
 
-//         public boolean leftButton;
-//         public boolean upperButton;
-//         public boolean rightButton;
-//         public boolean bottomButton;
+    private final CommandPS4Controller controller;
 
-//         public boolean leftShoulderButton;
-//         public boolean leftShoulderTrigger;
-//         public boolean rightShoulderButton;
-//         public boolean rightShoulderTrigger;
-
-//         public int POV;
-//     }
-//     public static final double IGNORE_DELTA = 0.08;
-
-    private final CommandPS5Controller controller;
-
-    public PS5Controller(CommandPS5Controller controller) {
+    public PS4Controller(CommandPS4Controller controller) {
         this.controller = controller;
     }
-//     public PS5Controller(CommandPS5Controller controller) {
-//         this.controller = controller;
-//     }
-
-//     private static double deadzone(double val) {
-//         if (Math.abs(val) < IGNORE_DELTA) {
-//             return 0;
-//         }
-//         return val;
-//     }
 
     @Override
     public double getRightHorizontalMovement() {
         return AbstractController.deadzone(controller.getRightX(), IGNORE_DELTA);
     }
-//     @Override
-//     public double getRightHorizontalMovement() {
-//         return deadzone(controller.getRightX());
-//     }
 
     @Override
     public double getRightVerticalMovement() {
         return -AbstractController.deadzone(controller.getRightY(), IGNORE_DELTA);
     }
-//     @Override
-//     public double getRightVerticalMovement() {
-//         return deadzone(controller.getRightY());
-//     }
 
     @Override
     public double getLeftHorizontalMovement() {
         return AbstractController.deadzone(controller.getLeftX(), IGNORE_DELTA);
     }
-//     @Override
-//     public double getLeftHorizontalMovement() {
-//         return deadzone(controller.getLeftX());
-//     }
 
     @Override
     public double getLeftVerticalMovement() {
         return -AbstractController.deadzone(controller.getLeftY(), IGNORE_DELTA);
     }
-//     @Override
-//     public double getLeftVerticalMovement() {
-//         return deadzone(controller.getLeftY());
-//     }
 
     @Override
     public boolean getRawButtonWrapper(int button) {
