@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 2.384461780980529,
-        "y": 2.253458604571122
+        "y": 2.2534586045711213
       },
       "isLocked": false,
       "linkedName": "HumanPlayer1"
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
-    "maxAcceleration": 4.5,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
