@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 5.13825,
-        "y": 2.88
+        "x": 5.155,
+        "y": 5.17
       },
       "prevControl": {
-        "x": 5.694734589041096,
-        "y": 3.3620239726027403
+        "x": 5.711484589041096,
+        "y": 5.65202397260274
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,8 +58,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -67,7 +67,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "Lil Addy's Bigger Booms",

@@ -131,9 +131,9 @@ public class SwerveModule {
         this.driveEncoder.setPosition(0);
         // this.turnEncoder.setPosition(0);
 
-        System.out.println(name + " is at abs-abs " + this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble() + ", abs " + this.turnAbsoluteEncoder.getPosition().getValueAsDouble());
+        // System.out.println(name + " is at abs-abs " + this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble() + ", abs " + this.turnAbsoluteEncoder.getPosition().getValueAsDouble());
         this.turnAbsoluteEncoder.setPosition(this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble());
-        System.out.println("magnet health of " + name + " is " + this.turnAbsoluteEncoder.getMagnetHealth().getValue());
+        // System.out.println("magnet health of " + name + " is " + this.turnAbsoluteEncoder.getMagnetHealth().getValue());
 
         if (this.turnAbsoluteEncoder.getFault_BadMagnet().getValue()) {
             System.out.println(name + " has a bad magnet");
@@ -146,13 +146,13 @@ public class SwerveModule {
 
         driveConfig.closedLoop
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                .pidf(0.6, 0, 0.3, 0.33) // p0.3, d 0.2 ff0.25
+                .pidf(0.85, 0, 0.4, 0.4) // p0.3, d 0.2 ff0.25
                 .outputRange(-1, 1);
 
         // These numbers are recently made up and subject to change.
         driveConfig.closedLoop.maxMotion
-                .maxVelocity(4.0)
-                .maxAcceleration(6.0)
+                .maxVelocity(3.5)
+                .maxAcceleration(5.0)
                 // TODO: tune closed loop error constant
                 .allowedClosedLoopError(0.1);
 

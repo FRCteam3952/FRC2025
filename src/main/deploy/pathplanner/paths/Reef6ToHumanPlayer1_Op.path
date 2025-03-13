@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.664652161815872,
-        "y": 2.611025969211882
+        "x": 5.093707191780822,
+        "y": 2.2745077054794525
       },
       "isLocked": false,
       "linkedName": "Reef6"
@@ -20,8 +20,8 @@
         "y": 0.8
       },
       "prevControl": {
-        "x": 1.6279301559982857,
-        "y": 1.0085072470354173
+        "x": 1.7131537158940267,
+        "y": 0.9127050091286454
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.36363636363636354,
+      "waypointRelativePos": 0.29679144385026746,
       "rotationDegrees": 119.99999999999999
     }
   ],
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -50,7 +50,7 @@
     "rotation": -126.15800000000002
   },
   "reversed": false,
-  "folder": "FourBigBooms",
+  "folder": "optimized",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 119.99999999999999

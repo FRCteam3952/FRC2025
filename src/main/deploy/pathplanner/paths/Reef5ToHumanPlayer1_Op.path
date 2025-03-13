@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4352805847066237,
-        "y": 2.2379570788628005
+        "x": 2.9830259473745357,
+        "y": 2.126744720885733
       },
       "isLocked": false,
       "linkedName": "Reef5"
@@ -20,8 +20,8 @@
         "y": 0.8
       },
       "prevControl": {
-        "x": 2.734672693125284,
-        "y": 2.7669343519524876
+        "x": 2.733324641628226,
+        "y": 2.6515396387962116
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -45,7 +45,7 @@
     "rotation": -126.15800000000002
   },
   "reversed": false,
-  "folder": "FourBigBooms",
+  "folder": "optimized",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 59.99999999999999

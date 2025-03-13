@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4892127869859624,
-        "y": 2.5440193436432317
+        "x": 2.7553439195962004,
+        "y": 2.7655208484866356
       },
       "isLocked": false,
       "linkedName": "HumanPlayer1"
@@ -20,8 +20,8 @@
         "y": 2.88
       },
       "prevControl": {
-        "x": 2.9479289413945646,
-        "y": 2.0468444238704895
+        "x": 3.002978182414404,
+        "y": 1.8391211525995836
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -45,7 +45,7 @@
     "rotation": 59.99999999999999
   },
   "reversed": false,
-  "folder": "FourBigBooms",
+  "folder": "optimized",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -126.15800000000002

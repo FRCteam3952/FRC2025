@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.850762728357669,
-        "y": 3.1258533902006307
+        "x": 2.841678074940601,
+        "y": 3.2678903127100587
       },
       "isLocked": false,
       "linkedName": "Reef4"
@@ -20,8 +20,8 @@
         "y": 0.8
       },
       "prevControl": {
-        "x": 1.7222050456266318,
-        "y": 1.2371958267881145
+        "x": 1.7501951373503533,
+        "y": 1.256499512455128
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -45,7 +45,7 @@
     "rotation": -126.15800000000002
   },
   "reversed": false,
-  "folder": "FourBigBooms",
+  "folder": "optimized",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

@@ -8,7 +8,7 @@ import frc.robot.subsystems.swerve.DriveTrainSubsystem;
 import frc.robot.util.Util;
 
 public class ManualDriveCommand extends Command {
-    public static final double MAX_SPEED_METERS_PER_SEC = Flags.DriveTrain.LOWER_MAX_SPEED ? 1.5 : 4;
+    public static final double MAX_SPEED_METERS_PER_SEC = Flags.DriveTrain.LOWER_MAX_SPEED ? 1.5 : 3.5;
     public static final double MAX_ROT_SPEED_ANGULAR = 3;
     private final DriveTrainSubsystem driveTrain;
     private final AbstractController joystick;

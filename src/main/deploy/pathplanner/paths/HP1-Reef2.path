@@ -3,45 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.161,
-        "y": 4.025
+        "x": 1.49,
+        "y": 0.8
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.705467213114753,
-        "y": 3.0060450819672138
+        "x": 3.5634735040639294,
+        "y": 1.9561408938347198
       },
       "isLocked": false,
-      "linkedName": "B1"
+      "linkedName": "HumanPlayer1"
     },
     {
       "anchor": {
-        "x": 5.810999999999999,
-        "y": 2.230999999999999
+        "x": 5.930037301880279,
+        "y": 3.0636552176468363
       },
       "prevControl": {
-        "x": 6.6717774786015545,
-        "y": 2.7399814656078765
+        "x": 5.561708748532716,
+        "y": 2.5971248630657975
       },
       "nextControl": {
-        "x": 4.68975,
-        "y": 1.5679999999999983
+        "x": 6.312205964673276,
+        "y": 3.547715658093702
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.83,
-        "y": 2.88
+        "x": 6.16,
+        "y": 4.5
       },
       "prevControl": {
-        "x": 4.025,
-        "y": 2.4899999999999998
+        "x": 6.390825100108691,
+        "y": 4.073799852964992
+      },
+      "nextControl": {
+        "x": 5.905727800326434,
+        "y": 4.969493347286577
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.155,
+        "y": 5.17
+      },
+      "prevControl": {
+        "x": 5.418062522006324,
+        "y": 5.034157509669511
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef5"
+      "linkedName": "Reef2"
     }
   ],
   "rotationTargets": [],
@@ -58,13 +74,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "FourBigBooms",
+  "folder": "dynamic path gen",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -126.15800000000002
   },
   "useDefaultConstraints": true
 }
