@@ -50,15 +50,14 @@ public class JoyrideCommand extends Command {
         // Begins going straight forwards.
         double timeElapsed = timer.get();
         double percentComplete = timeElapsed / this.duration;
-        if(percentComplete<=0.25){
-            this.driveTrain.drive(1.8, 0, 0, false);
-        } else if (percentComplete<=0.5) {
-            this.driveTrain.drive(0, 1.8, 0, false);
-        } else if (percentComplete <=0.75) {
-            this.driveTrain.drive(-1.8, 0, 0, false);
-        } else if (percentComplete <=1) {
+        if(percentComplete<=0.33){
             this.driveTrain.drive(0, -1.8, 0, false);
-        }
+        } else if (percentComplete<=0.66) {
+            this.driveTrain.drive(1.8, 0, 0, false);
+        } else if (percentComplete <=1) {
+            this.driveTrain.drive(-1.8, 1.8, 0, false);
+        } 
+        
     }
 
     // Called once the command ends or is interrupted.
